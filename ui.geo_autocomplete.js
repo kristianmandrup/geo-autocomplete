@@ -23,19 +23,32 @@ $.widget( "ui.geo_autocomplete", {
 		};
 	},
 	
-	// default values
+  /*  default values
+   *    geocoder_region  - filter to a specific region, e.g. 'Europe'
+   *    geocoder_types   - array of acceptable location types, see http://code.google.com/apis/maps/documentation/javascript/services.html#GeocodingAddressTypes
+   *    geocoder_address - true: use full formatted address; false: use the segment that matches the search term
+   *    mapwidth         - width of static map thumbnail
+   *    mapheight        - height of static map thumbnail
+   *    maptype          - see http://code.google.com/apis/maps/documentation/staticmaps/#MapTypes
+   *    mapsensor        - see http://code.google.com/apis/maps/documentation/staticmaps/#Sensor
+   *    minLength        - see http://jqueryui.com/demos/autocomplete/#option-minLength
+   *    delay            - see http://jqueryui.com/demos/autocomplete/#option-delay
+   */
 	options: {
-		geocoder_region: '', // filter to a specific region, e.g. 'Europe'
-		geocoder_types: 'locality,political,sublocality,neighborhood,country', // array of acceptable location types, see http://code.google.com/apis/maps/documentation/javascript/services.html#GeocodingAddressTypes
-		geocoder_address: false, // true = use the full formatted address, false = use only the segment that matches the search term
-
-		mapwidth: 100, // width of static map thumbnail
-		mapheight: 100, // height of static map thumbnail
-		maptype: 'terrain', // see http://code.google.com/apis/maps/documentation/staticmaps/#MapTypes
-		mapsensor: false, // see http://code.google.com/apis/maps/documentation/staticmaps/#Sensor
-
-		minLength: 3, // see http://jqueryui.com/demos/autocomplete/#option-minLength
-		delay: 300, // see http://jqueryui.com/demos/autocomplete/#option-delay
+		geocoder_region : '', 
+		geocoder_types  : 'street_address,route,intersection,political,country,' +           
+      'administrative_area_level_1,administrative_area_level_2,' + 
+      'administrative_area_level_3,colloquial_area,locality,sublocality,' + 
+      'neighborhood,premise,subpremise,postal_code,natural_feature,airport,park,' + 
+      'establishment', 
+		geocoder_address : false,
+		mapwidth         : 100, 
+		mapheight        : 100, 
+		maptype          : 'terrain', 
+		mapsensor        : false, 
+		minLength        : 3, 
+		delay            : 300,
+		
 		// callback function to get autocomplete results
 		source: function(_request, _response) {
 			if (_request.term in this.options._cache) {
