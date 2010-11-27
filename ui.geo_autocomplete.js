@@ -12,9 +12,19 @@
  */
 $.widget( "ui.geo_autocomplete", {
 	// setup the element as an autocomplete widget with some geo goodness added
-	_init: function() {
+	
+	_init: function() {	  
+	  var self = this;
+	  
 		this.options._geocoder = new google.maps.Geocoder, // geocoder object
 		this.options._cache = {}; // cache of geocoder responses
+		
+		if (this.options.pinDrop) {		  
+		  this.element.bind( "autocompleteselect", function(event, ui){
+		    self.options.pinDropSelect(event, ui);
+		  });
+		}
+		
 		this.element.autocomplete(this.options);
 		
 		// _renderItem is used to prevent the widget framework from escaping the HTML required to show the static map thumbnail
@@ -31,6 +41,8 @@ $.widget( "ui.geo_autocomplete", {
    *    mapheight        - height of static map thumbnail
    *    maptype          - see http://code.google.com/apis/maps/documentation/staticmaps/#MapTypes
    *    mapsensor        - see http://code.google.com/apis/maps/documentation/staticmaps/#Sensor
+   *    pinDrop          - true: adds pinDrop option to end of results list, default false, if true, requires map
+   *    map              - google maps map object, eg: new google.maps.Map(document.getElementById("map_canvas"), {})
    *    minLength        - see http://jqueryui.com/demos/autocomplete/#option-minLength
    *    delay            - see http://jqueryui.com/demos/autocomplete/#option-delay
    */
@@ -46,6 +58,8 @@ $.widget( "ui.geo_autocomplete", {
 		mapheight        : 100, 
 		maptype          : 'terrain', 
 		mapsensor        : false, 
+		pinDrop          : false,
+		map              : null,
 		minLength        : 3, 
 		delay            : 300,
 		
@@ -87,16 +101,79 @@ $.widget( "ui.geo_autocomplete", {
 								});
 							}
 						});
+            
+						if (self.options.pinDrop) {
+						  // Drop a pin option
+              row = ['Drop a pin', null];
+              _parsed.push({
+                viewport: row,
+                value: row[0],
+                label: _request.term
+              });
+						}
 					}
 					self.options._cache[_request.term] = _parsed;
 					_response(_parsed);
 				});
 			}
 		},
+		
 		// returns the HTML used for each autocomplete list item
-		getItemHTML: function(_item) {		
-			var _src = 'http://maps.google.com/maps/api/staticmap?visible=' + _item.viewport.getSouthWest().toUrlValue() + '|' + _item.viewport.getNorthEast().toUrlValue() + '&size=' + this.mapwidth + 'x' + this.mapheight + '&maptype=' + this.maptype + '&sensor=' + (this.mapsensor ? 'true' : 'false');
-			return '<a><img style="float:left;margin-right:5px;" src="' + _src + '" width="' + this.mapwidth + '" height="' + this.mapheight + '" /> ' + _item.label.replace(/,/gi, ',<br/>') + '<br clear="both" /></a>'
+		getItemHTML: function(_item) {
+		  if (typeof _item.viewport.getSouthWest != "undefined") {
+		    var _src = 'http://maps.google.com/maps/api/staticmap?visible=' + 
+  			  _item.viewport.getSouthWest().toUrlValue() + '|' + 
+  			  _item.viewport.getNorthEast().toUrlValue() + '&size=' + this.mapwidth + 
+  			  'x' + this.mapheight + '&maptype=' + this.maptype + '&sensor=' + 
+  			  (this.mapsensor ? 'true' : 'false');
+  			
+  			return '<a><img style="float:left;margin-right:5px;" src="' + _src + 
+  			  '" width="' + this.mapwidth + '" height="' + this.mapheight + '" /> ' + 
+  			  _item.label.replace(/,/gi, ',<br/>') + '<br clear="both" /></a>'
+		  } else if (this.pinDrop) {
+		    return '<a style="padding-left:' + (this.mapwidth + 5) + 'px;">' + _item.value + '</a>'; 
+		  }			  
+		},
+		
+		// handler for click on results
+		pinDropSelect: function(_event, _ui) {
+		  if (this.map) {
+  			if (typeof _ui.item.viewport.getSouthWest == "function" ){
+  			  this.map.fitBounds(_ui.item.viewport);
+  			} else {
+  			  var self = this;
+  			  
+  			  google.maps.event.addListener(this.map, 'click', function() {
+            if (self.infowindow) self.infowindow.close();
+          });
+
+          google.maps.event.addListener(this.map, 'click', function(event) {
+            if (self.marker) {
+              self.marker.setMap(null);
+              self.marker = null;
+            }
+            
+            self.marker = new google.maps.Marker({
+              position: event.latLng,
+              map: self.map,
+              zIndex: Math.round(event.latLng.lat()*-100000)<<5
+            });
+
+            google.maps.event.addListener(self.marker, 'click', function() {
+              if (!self.infowindow) {
+                self.infowindow = new google.maps.InfoWindow({ 
+                  size: new google.maps.Size(150,50)
+                });
+              }
+              
+              self.infowindow.setContent("<b>Location</b><br>"+event.latLng); 
+              self.infowindow.open(self.map,self.marker);
+            });
+            
+            google.maps.event.trigger(self.marker, 'click');
+          });
+  			}
+		  }
 		}
 	}
 });
