@@ -1,7 +1,7 @@
 /*
- * jQuery geo_autocomplete plugin 2.0.1
+ * jQuery geo_autocomplete plugin 3.0.0
  *
- * Copyright (c) 2010 Bob Hitching
+ * Copyright (c) 2010 Bob Hitching, Julia West
  *
  * Dual licensed under the MIT and GPL licenses:
  *   http://www.opensource.org/licenses/mit-license.php
