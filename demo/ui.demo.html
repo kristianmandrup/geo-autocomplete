@@ -50,7 +50,14 @@ function demo4() {
 		geocoder_address: true,
 		maptype: 'roadmap',
 		pinDrop: true,
-		map: map
+		map: map,
+		select: function(_event, _ui) {
+      var lat = _ui.item.viewport.getCenter().lat();
+      var lng = _ui.item.viewport.getCenter().lng();
+      
+      $("#demo4_lat").val(lat);
+      $("#demo4_lng").val(lng);
+		}
   });
 }
 
@@ -79,6 +86,8 @@ function demo4() {
 
 <h3>Pin drop demo</h3>
 <p>Location: <input type="text" id="demo4_location" size="50" /></p>
+<p>Latitude: <input type="text" id="demo4_lat" /></p>
+<p>Longitude: <input type="text" id="demo4_lng" /></p>
 <div id="demo4_map" style="width:400px;height:300px;"></div>
 
 </body>
