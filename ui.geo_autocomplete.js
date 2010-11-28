@@ -104,8 +104,8 @@ $.widget( "ui.geo_autocomplete", {
             
 						if (self.options.pinDrop) {
               _parsed.push({
-                value: 'Drop a pin',
-                label: _request.term
+                value: _request.term,
+                label: 'Drop a pin'
               });
 						}
 					}
@@ -128,7 +128,7 @@ $.widget( "ui.geo_autocomplete", {
   			  '" width="' + this.mapwidth + '" height="' + this.mapheight + '" /> ' + 
   			  _item.label.replace(/,/gi, ',<br/>') + '<br clear="both" /></a>'
 		  } else if (this.pinDrop) {
-		    return '<a style="padding-left:' + (this.mapwidth + 5) + 'px;">' + _item.value + '</a>'; 
+		    return '<a style="padding-left:' + (this.mapwidth + 5) + 'px;">' + _item.label + '</a>'; 
 		  }			  
 		},
 		
