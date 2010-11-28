@@ -41,7 +41,7 @@ $.widget( "ui.geo_autocomplete", {
    *    mapheight        - height of static map thumbnail
    *    maptype          - see http://code.google.com/apis/maps/documentation/staticmaps/#MapTypes
    *    mapsensor        - see http://code.google.com/apis/maps/documentation/staticmaps/#Sensor
-   *    pinDrop          - true: adds pinDrop option to end of results list, default false, if true, requires map
+   *    pinDrop          - callback function upon pin drop. adds pinDrop option to end of results list. requires map
    *    map              - google maps map object, eg: new google.maps.Map(document.getElementById("map_canvas"), {})
    *    minLength        - see http://jqueryui.com/demos/autocomplete/#option-minLength
    *    delay            - see http://jqueryui.com/demos/autocomplete/#option-delay
@@ -58,7 +58,7 @@ $.widget( "ui.geo_autocomplete", {
 		mapheight        : 100, 
 		maptype          : 'terrain', 
 		mapsensor        : false, 
-		pinDrop          : false,
+		pinDrop          : null,
 		map              : null,
 		minLength        : 3, 
 		delay            : 300,
@@ -137,43 +137,28 @@ $.widget( "ui.geo_autocomplete", {
 		
 		// handler for click on results
 		pinDropSelect: function(_event, _ui) {
-		  if (this.map) {
-  			if (typeof _ui.item.viewport.getSouthWest == "function" ){
-  			  this.map.fitBounds(_ui.item.viewport);
-  			} else {
-  			  var self = this;
-  			  
-  			  google.maps.event.addListener(this.map, 'click', function() {
-            if (self.infowindow) self.infowindow.close();
-          });
+  		if ( this.map && typeof _ui.item.viewport.getSouthWest != "function" ){
+			  var self = this;
+        
+        // Add a click listener which displays the marker to the map
+        google.maps.event.addListener(this.map, 'click', function(event){ 
+          if (self.infowindow) self.infowindow.close();
+          
+          if (self.marker) {
+            self.marker.setMap(null);
+            self.marker = null;
+          }
 
-          google.maps.event.addListener(this.map, 'click', function(event) {
-            if (self.marker) {
-              self.marker.setMap(null);
-              self.marker = null;
-            }
-            
-            self.marker = new google.maps.Marker({
-              position: event.latLng,
-              map: self.map,
-              zIndex: Math.round(event.latLng.lat()*-100000)<<5
-            });
-
-            google.maps.event.addListener(self.marker, 'click', function() {
-              if (!self.infowindow) {
-                self.infowindow = new google.maps.InfoWindow({ 
-                  size: new google.maps.Size(150,50)
-                });
-              }
-              
-              self.infowindow.setContent("<b>Location</b><br>"+event.latLng); 
-              self.infowindow.open(self.map,self.marker);
-            });
-            
-            google.maps.event.trigger(self.marker, 'click');
+          self.marker = new google.maps.Marker({
+            position: event.latLng,
+            map: self.map,
+            zIndex: Math.round(event.latLng.lat()*-100000)<<5
           });
-  			}
-		  }
+          
+          // Call custom pin drop handler
+          self.pinDrop(event);
+        });
+			}
 		}
 	}
 });

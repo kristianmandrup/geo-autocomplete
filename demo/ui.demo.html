@@ -49,14 +49,43 @@ function demo4() {
 		mapheight: 75,
 		geocoder_address: true,
 		maptype: 'roadmap',
-		pinDrop: true,
 		map: map,
-		select: function(_event, _ui) {
-      var lat = _ui.item.viewport.getCenter().lat();
-      var lng = _ui.item.viewport.getCenter().lng();
+		
+		// Callback on pin drop
+		pinDrop: function(event) {
+		  // this is the geo_autocomplete options object
+		  // it contains the google maps map object and a marker object
+		  var self = this;
+		  
+		  // in pinDrop, you can do things like show an infowindow
+      google.maps.event.addListener(this.marker, 'click', function() {
+        if (!self.infowindow) {
+          self.infowindow = new google.maps.InfoWindow({ 
+            size: new google.maps.Size(150,50)
+          });
+        }
+        self.infowindow.setContent("<b>Location</b><br>"+event.latLng); 
+        self.infowindow.open(self.map,self.marker);
+      });
       
-      $("#demo4_lat").val(lat);
-      $("#demo4_lng").val(lng);
+      google.maps.event.trigger(self.marker, 'click');
+      
+      // or, you can utilize the coordinates for whatever
+      $("#demo4_lat").val(event.latLng.lat());
+      $("#demo4_lng").val(event.latLng.lng());
+    },
+		
+    // Example callback on select item from autocomplete list
+		select: function(_event, _ui) {
+		  if (typeof _ui.item.viewport.getCenter == "function") {
+		    var lat = _ui.item.viewport.getCenter().lat();
+        var lng = _ui.item.viewport.getCenter().lng();
+        
+        map.fitBounds(_ui.item.viewport);
+
+        $("#demo4_lat").val(lat);
+        $("#demo4_lng").val(lng);
+		  }
 		}
   });
 }
