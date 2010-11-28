@@ -77,7 +77,7 @@ function demo4() {
 		
     // Example callback on select item from autocomplete list
 		select: function(_event, _ui) {
-		  if (typeof _ui.item.viewport.getCenter == "function") {
+		  if ( _ui.item.viewport ) {
 		    var lat = _ui.item.viewport.getCenter().lat();
         var lng = _ui.item.viewport.getCenter().lng();
         

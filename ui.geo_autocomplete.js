@@ -103,11 +103,8 @@ $.widget( "ui.geo_autocomplete", {
 						});
             
 						if (self.options.pinDrop) {
-						  // Drop a pin option
-              row = ['Drop a pin', null];
               _parsed.push({
-                viewport: row,
-                value: row[0],
+                value: 'Drop a pin',
                 label: _request.term
               });
 						}
@@ -120,7 +117,7 @@ $.widget( "ui.geo_autocomplete", {
 		
 		// returns the HTML used for each autocomplete list item
 		getItemHTML: function(_item) {
-		  if (typeof _item.viewport.getSouthWest != "undefined") {
+		  if ( _item.viewport ) {
 		    var _src = 'http://maps.google.com/maps/api/staticmap?visible=' + 
   			  _item.viewport.getSouthWest().toUrlValue() + '|' + 
   			  _item.viewport.getNorthEast().toUrlValue() + '&size=' + this.mapwidth + 
@@ -137,7 +134,7 @@ $.widget( "ui.geo_autocomplete", {
 		
 		// handler for click on results
 		pinDropSelect: function(_event, _ui) {
-  		if ( this.map && typeof _ui.item.viewport.getSouthWest != "function" ){
+  		if ( this.map && !_ui.item.viewport ){
 			  var self = this;
         
         // Add a click listener which displays the marker to the map
