@@ -128,7 +128,7 @@ $.widget( "ui.geo_autocomplete", {
   			  '" width="' + this.mapwidth + '" height="' + this.mapheight + '" /> ' + 
   			  _item.label.replace(/,/gi, ',<br/>') + '<br clear="both" /></a>'
 		  } else if (this.pinDrop) {
-		    return '<a style="padding-left:' + (this.mapwidth + 5) + 'px;">' + _item.label + '</a>'; 
+		    return '<a style="padding-left:' + (this.mapwidth + 10) + 'px;">' + _item.label + '</a>'; 
 		  }			  
 		},
 		
