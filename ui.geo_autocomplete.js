@@ -97,7 +97,9 @@ $.widget( "ui.geo_autocomplete", {
 								_parsed.push({
 									value: _place,
 									label: _result.formatted_address,
-									viewport: _result.geometry.viewport
+									viewport: _result.geometry.viewport,
+									latitude: _result.geometry.location.Da,
+									longitude: _result.geometry.location.Fa
 								});
 							}
 						});
