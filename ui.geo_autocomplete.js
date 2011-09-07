@@ -93,13 +93,16 @@ $.widget( "ui.geo_autocomplete", {
 										}
 									});
 								}
-							
+								matches = _result.geometry.location.toString().match(/(-?\d+.\d+),\s*(-?\d+.\d+)/);
+								latitude = matches[1];
+								longitude = matches[2];
+
 								_parsed.push({
 									value: _place,
 									label: _result.formatted_address,
 									viewport: _result.geometry.viewport,
-									latitude: _result.geometry.location.Da,
-									longitude: _result.geometry.location.Fa
+									latitude: latitude,
+									longitude: longitude
 								});
 							}
 						});
